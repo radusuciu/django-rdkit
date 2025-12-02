@@ -5,10 +5,18 @@ Django projects integrating the functionalities provided by ``django_rdkit`` sho
 
   DATABASES={
       'default': {
-          'ENGINE': 'django.db.backends.postgresql_psycopg2',
+          'ENGINE': 'django.db.backends.postgresql',
           # [...],
       }
   }
+
+This project supports both ``psycopg2`` and ``psycopg`` (psycopg3) as PostgreSQL drivers. Install your preferred driver separately::
+
+  pip install psycopg2  # or psycopg2-binary
+  # OR
+  pip install "psycopg[binary]"  # psycopg3 with pre-built binary
+  # OR
+  pip install "psycopg[c]"  # psycopg3 with C speedups (requires build tools)
 
 Two additional operations are then to be performed on the database in order to use the RDKit cartridge.
 
