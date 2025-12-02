@@ -1,4 +1,16 @@
+## [0.5.0]
+
+### Changed
+- Removed `psycopg2` as a hard dependency. The package now supports both `psycopg2` and
+  `psycopg` (psycopg3) as PostgreSQL drivers. Install your preferred driver separately.
+- Updated database backend references from `django.db.backends.postgresql_psycopg2` to
+  `django.db.backends.postgresql` for compatibility with both drivers.
+
 ## [0.4.1]
+
+### Added
+- Started using `pyproject.toml`
+- published as to PyPI as `django-rdkit-unofficial`
 
 ### Fixed
 - Updated `DistanceExpression.resolve_expression` to include the `for_save` parameter, fixing a
