@@ -1,7 +1,7 @@
 
 [project]
 name = "django-rdkit-unofficial"
-version = "0.4.0"
+version = "0.4.1"
 description = "Django integration for RDKit (unofficial PyPI release)"
 readme = "README.md"
 license = "BSD-3-Clause"

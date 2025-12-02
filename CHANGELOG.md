@@ -1,3 +1,9 @@
+## [0.4.1]
+
+### Fixed
+- Updated `DistanceExpression.resolve_expression` to include the `for_save` parameter, fixing a
+  `TypeError` encountered in Django 5.2.
+
 ## [0.4.0]
 
 ### Added
