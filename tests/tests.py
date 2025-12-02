@@ -442,6 +442,40 @@ class DistanceExpressionTest(TestCase):
         first = objs.first()
         self.assertAlmostEqual(first.distance, 0.0, places=5)
 
+    def test_tanimoto_dist_with_tanimoto_filter(self):
+        """Test TANIMOTO_DIST combined with tanimoto filter and similarity annotation.
+
+        This matches the common usage pattern for finding similar molecules:
+        filter by tanimoto threshold, annotate with similarity, order by distance.
+        """
+        query_smiles = 'CCN1c2ccccc2Sc2ccccc21'
+        query_bfp = MORGANBV_FP(Value(query_smiles))
+
+        objs = (
+            BfpModel.objects
+            .filter(bfp__tanimoto=query_bfp)
+            .annotate(similarity=TANIMOTO_SML('bfp', query_bfp))
+            .order_by(TANIMOTO_DIST('bfp', query_bfp))
+        )
+
+        results = list(objs)
+        self.assertTrue(len(results) > 0)
+
+    def test_dice_dist_with_dice_filter(self):
+        """Test DICE_DIST combined with dice filter and similarity annotation."""
+        query_smiles = 'CCN1c2ccccc2Sc2ccccc21'
+        query_bfp = MORGANBV_FP(Value(query_smiles))
+
+        objs = (
+            BfpModel.objects
+            .filter(bfp__dice=query_bfp)
+            .annotate(similarity=DICE_SML('bfp', query_bfp))
+            .order_by(DICE_DIST('bfp', query_bfp))
+        )
+
+        results = list(objs)
+        self.assertTrue(len(results) > 0)
+
 
 class SfpFieldTest1(TestCase):
 
