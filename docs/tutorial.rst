@@ -23,7 +23,7 @@ Replace the default database settings with those appropriate to the created Post
 
   DATABASES={
       'default': {
-          'ENGINE': 'django.db.backends.postgresql_psycopg2',
+          'ENGINE': 'django.db.backends.postgresql',
           'NAME': 'django_rdkit_tutorial',
           'USER': '',
           'PASSWORD': '',

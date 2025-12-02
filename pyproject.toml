@@ -39,10 +39,15 @@ classifiers = [
 ]
 dependencies = [
     "Django>=4.2",
-    "psycopg2>=2.9",
 ]
 
 [project.optional-dependencies]
+psycopg2 = [
+    "psycopg2>=2.9",
+]
+psycopg = [
+    "psycopg>=3.1",
+]
 dev = [
     "pytest",
     "pytest-django",

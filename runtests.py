@@ -13,7 +13,7 @@ DEFAULT_SETTINGS = dict(
     ),
     DATABASES={
         "default": {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'ENGINE': 'django.db.backends.postgresql',
             'NAME': os.environ.get('DJANGO_DB', 'test'),
             'USER': os.environ.get('DJANGO_USER', ''),
             'PASSWORD': os.environ.get('DJANGO_PASSWORD', ''),
