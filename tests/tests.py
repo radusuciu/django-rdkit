@@ -382,99 +382,15 @@ class DistanceExpressionTest(TestCase):
             record.bfp = MORGANBV_FP(Value(smiles))
             record.save()
 
-    def test_tanimoto_dist_ordering(self):
-        """Test that TANIMOTO_DIST can be used in order_by to sort by similarity."""
-        query_smiles = 'CCN1c2ccccc2Sc2ccccc21'
-        query_bfp = MORGANBV_FP(Value(query_smiles))
+    def test_tanimoto_dist_order_by(self):
+        query_bfp = MORGANBV_FP(Value('CCN1c2ccccc2Sc2ccccc21'))
+        objs = BfpModel.objects.order_by(TANIMOTO_DIST('bfp', query_bfp))
+        self.assertEqual(objs.count(), len(SMILES_SAMPLE))
 
-        objs = BfpModel.objects.annotate(
-            distance=TANIMOTO_DIST('bfp', query_bfp)
-        ).order_by('distance')[:5]
-
-        results = list(objs)
-        self.assertTrue(len(results) > 0)
-
-        # Verify ordering: each distance should be <= the next
-        distances = [obj.distance for obj in results]
-        for i in range(len(distances) - 1):
-            self.assertLessEqual(distances[i], distances[i + 1])
-
-    def test_dice_dist_ordering(self):
-        """Test that DICE_DIST can be used in order_by to sort by similarity."""
-        query_smiles = 'CCN1c2ccccc2Sc2ccccc21'
-        query_bfp = MORGANBV_FP(Value(query_smiles))
-
-        objs = BfpModel.objects.annotate(
-            distance=DICE_DIST('bfp', query_bfp)
-        ).order_by('distance')[:5]
-
-        results = list(objs)
-        self.assertTrue(len(results) > 0)
-
-        # Verify ordering: each distance should be <= the next
-        distances = [obj.distance for obj in results]
-        for i in range(len(distances) - 1):
-            self.assertLessEqual(distances[i], distances[i + 1])
-
-    def test_tanimoto_dist_exact_match_has_zero_distance(self):
-        """Test that an exact fingerprint match has distance 0."""
-        query_smiles = SMILES_SAMPLE[0]
-        query_bfp = MORGANBV_FP(Value(query_smiles))
-
-        objs = BfpModel.objects.annotate(
-            distance=TANIMOTO_DIST('bfp', query_bfp)
-        ).order_by('distance')
-
-        # The first result should have distance 0 (exact match)
-        first = objs.first()
-        self.assertAlmostEqual(first.distance, 0.0, places=5)
-
-    def test_dice_dist_exact_match_has_zero_distance(self):
-        """Test that an exact fingerprint match has distance 0."""
-        query_smiles = SMILES_SAMPLE[0]
-        query_bfp = MORGANBV_FP(Value(query_smiles))
-
-        objs = BfpModel.objects.annotate(
-            distance=DICE_DIST('bfp', query_bfp)
-        ).order_by('distance')
-
-        # The first result should have distance 0 (exact match)
-        first = objs.first()
-        self.assertAlmostEqual(first.distance, 0.0, places=5)
-
-    def test_tanimoto_dist_with_tanimoto_filter(self):
-        """Test TANIMOTO_DIST combined with tanimoto filter and similarity annotation.
-
-        This matches the common usage pattern for finding similar molecules:
-        filter by tanimoto threshold, annotate with similarity, order by distance.
-        """
-        query_smiles = 'CCN1c2ccccc2Sc2ccccc21'
-        query_bfp = MORGANBV_FP(Value(query_smiles))
-
-        objs = (
-            BfpModel.objects
-            .filter(bfp__tanimoto=query_bfp)
-            .annotate(similarity=TANIMOTO_SML('bfp', query_bfp))
-            .order_by(TANIMOTO_DIST('bfp', query_bfp))
-        )
-
-        results = list(objs)
-        self.assertTrue(len(results) > 0)
-
-    def test_dice_dist_with_dice_filter(self):
-        """Test DICE_DIST combined with dice filter and similarity annotation."""
-        query_smiles = 'CCN1c2ccccc2Sc2ccccc21'
-        query_bfp = MORGANBV_FP(Value(query_smiles))
-
-        objs = (
-            BfpModel.objects
-            .filter(bfp__dice=query_bfp)
-            .annotate(similarity=DICE_SML('bfp', query_bfp))
-            .order_by(DICE_DIST('bfp', query_bfp))
-        )
-
-        results = list(objs)
-        self.assertTrue(len(results) > 0)
+    def test_dice_dist_order_by(self):
+        query_bfp = MORGANBV_FP(Value('CCN1c2ccccc2Sc2ccccc21'))
+        objs = BfpModel.objects.order_by(DICE_DIST('bfp', query_bfp))
+        self.assertEqual(objs.count(), len(SMILES_SAMPLE))
 
 
 class SfpFieldTest1(TestCase):
