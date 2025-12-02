@@ -1,0 +1,69 @@
+
+[project]
+name = "django-rdkit-unofficial"
+version = "0.4.0"
+description = "Django integration for RDKit (unofficial PyPI release)"
+readme = "README.md"
+license = "BSD-3-Clause"
+requires-python = ">=3.10"
+authors = [
+    { name = "Riccardo Vianello" },
+]
+maintainers = [
+    { name = "Radu Suciu", email = "radusuciu@gmail.com" },
+]
+keywords = [
+    "django",
+    "rdkit",
+    "chemistry",
+    "cheminformatics",
+    "postgresql",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.1",
+    "Framework :: Django :: 5.2",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Chemistry",
+]
+dependencies = [
+    "Django>=4.2",
+    "psycopg2>=2.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-django",
+]
+
+[project.urls]
+Homepage = "https://github.com/rdkit/django-rdkit"
+Repository = "https://github.com/rdkit/django-rdkit"
+Changelog = "https://github.com/rdkit/django-rdkit/blob/master/CHANGELOG.md"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["django_rdkit"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "django_rdkit/",
+    "LICENSE",
+    "README.md",
+    "CHANGELOG.md",
+]
