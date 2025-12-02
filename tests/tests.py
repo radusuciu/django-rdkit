@@ -384,13 +384,13 @@ class DistanceExpressionTest(TestCase):
 
     def test_tanimoto_dist_order_by(self):
         query_bfp = MORGANBV_FP(Value('CCN1c2ccccc2Sc2ccccc21'))
-        objs = BfpModel.objects.order_by(TANIMOTO_DIST('bfp', query_bfp))
-        self.assertEqual(objs.count(), len(SMILES_SAMPLE))
+        objs = list(BfpModel.objects.order_by(TANIMOTO_DIST('bfp', query_bfp))[:5])
+        self.assertEqual(len(objs), 5)
 
     def test_dice_dist_order_by(self):
         query_bfp = MORGANBV_FP(Value('CCN1c2ccccc2Sc2ccccc21'))
-        objs = BfpModel.objects.order_by(DICE_DIST('bfp', query_bfp))
-        self.assertEqual(objs.count(), len(SMILES_SAMPLE))
+        objs = list(BfpModel.objects.order_by(DICE_DIST('bfp', query_bfp))[:5])
+        self.assertEqual(len(objs), 5)
 
 
 class SfpFieldTest1(TestCase):
