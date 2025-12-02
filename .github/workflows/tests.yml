@@ -1,0 +1,72 @@
+name: Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
+        django-version: ["4.2", "5.1", "5.2"]
+        # using these specific versions since I have an image built for them
+        # here: https://github.com/radusuciu/docker-postgres-rdkit
+        # these should be expanded when I take a look at that repo to add more versions
+        postgres-version: ["14.17"]
+        rdkit-version: ["2024_09_3"]
+        exclude:
+          # Django 4.2 supports Python 3.8-3.12
+          - python-version: "3.13"
+            django-version: "4.2"
+          - python-version: "3.14"
+            django-version: "4.2"
+
+    services:
+      postgres:
+        image: ghcr.io/radusuciu/docker-postgres-rdkit/postgres-rdkit:postgres-${{ matrix.postgres-version }}-rdkit-${{ matrix.rdkit-version }}
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install Django~=${{ matrix.django-version }}.0
+          pip install psycopg2-binary
+          RDKIT_PYPI_VERSION=$(echo "${{ matrix.rdkit-version }}" | tr '_' '.')
+          pip install rdkit==${RDKIT_PYPI_VERSION}
+          pip install -e .
+
+      - name: Run tests
+        env:
+          DJANGO_DB: test
+          DJANGO_USER: postgres
+          DJANGO_PASSWORD: postgres
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+        run: |
+          python runtests.py
