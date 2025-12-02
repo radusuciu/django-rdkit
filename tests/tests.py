@@ -373,6 +373,76 @@ class BfpFieldTest3(TestCase):
                              list(obfp.GetOnBits()))
 
 
+class DistanceExpressionTest(TestCase):
+    """Test TANIMOTO_DIST and DICE_DIST distance expressions."""
+
+    def setUp(self):
+        for smiles in SMILES_SAMPLE:
+            record = BfpModel.objects.create()
+            record.bfp = MORGANBV_FP(Value(smiles))
+            record.save()
+
+    def test_tanimoto_dist_ordering(self):
+        """Test that TANIMOTO_DIST can be used in order_by to sort by similarity."""
+        query_smiles = 'CCN1c2ccccc2Sc2ccccc21'
+        query_bfp = MORGANBV_FP(Value(query_smiles))
+
+        objs = BfpModel.objects.annotate(
+            distance=TANIMOTO_DIST('bfp', query_bfp)
+        ).order_by('distance')[:5]
+
+        results = list(objs)
+        self.assertTrue(len(results) > 0)
+
+        # Verify ordering: each distance should be <= the next
+        distances = [obj.distance for obj in results]
+        for i in range(len(distances) - 1):
+            self.assertLessEqual(distances[i], distances[i + 1])
+
+    def test_dice_dist_ordering(self):
+        """Test that DICE_DIST can be used in order_by to sort by similarity."""
+        query_smiles = 'CCN1c2ccccc2Sc2ccccc21'
+        query_bfp = MORGANBV_FP(Value(query_smiles))
+
+        objs = BfpModel.objects.annotate(
+            distance=DICE_DIST('bfp', query_bfp)
+        ).order_by('distance')[:5]
+
+        results = list(objs)
+        self.assertTrue(len(results) > 0)
+
+        # Verify ordering: each distance should be <= the next
+        distances = [obj.distance for obj in results]
+        for i in range(len(distances) - 1):
+            self.assertLessEqual(distances[i], distances[i + 1])
+
+    def test_tanimoto_dist_exact_match_has_zero_distance(self):
+        """Test that an exact fingerprint match has distance 0."""
+        query_smiles = SMILES_SAMPLE[0]
+        query_bfp = MORGANBV_FP(Value(query_smiles))
+
+        objs = BfpModel.objects.annotate(
+            distance=TANIMOTO_DIST('bfp', query_bfp)
+        ).order_by('distance')
+
+        # The first result should have distance 0 (exact match)
+        first = objs.first()
+        self.assertAlmostEqual(first.distance, 0.0, places=5)
+
+    def test_dice_dist_exact_match_has_zero_distance(self):
+        """Test that an exact fingerprint match has distance 0."""
+        query_smiles = SMILES_SAMPLE[0]
+        query_bfp = MORGANBV_FP(Value(query_smiles))
+
+        objs = BfpModel.objects.annotate(
+            distance=DICE_DIST('bfp', query_bfp)
+        ).order_by('distance')
+
+        # The first result should have distance 0 (exact match)
+        first = objs.first()
+        self.assertAlmostEqual(first.distance, 0.0, places=5)
+
+
 class SfpFieldTest1(TestCase):
 
     def setUp(self):
