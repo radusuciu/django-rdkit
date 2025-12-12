@@ -270,7 +270,7 @@ class HasSubstruct(Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s @> %s' % (lhs, rhs), params
 
 
@@ -288,7 +288,7 @@ class HasSubstructFP(Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s ?> %s' % (lhs, rhs), params
 
 
@@ -303,7 +303,7 @@ class IsSubstruct(Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s <@ %s' % (lhs, rhs), params
 
 class IsMolSubstruct(MolLookupMixin, IsSubstruct):
@@ -320,7 +320,7 @@ class IsSubstructFP(Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s ?< %s' % (lhs, rhs), params
 
 RxnField.register_lookup(IsSubstructFP)
@@ -334,7 +334,7 @@ class SameStructure(MolLookupMixin, Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s @= %s' % (lhs, rhs), params
         #return '%s <@ %s AND %s @> %s' % (lhs, rhs, lhs, rhs), params + params
 
@@ -463,7 +463,7 @@ class TanimotoSimilar(Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s %%%% %s' % (lhs, rhs), params
 
 
@@ -478,7 +478,7 @@ class DiceSimilar(Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s # %s' % (lhs, rhs), params
 
 
@@ -493,7 +493,7 @@ class NotEqual(Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s <> %s' % (lhs, rhs), params
 
 
