@@ -4,7 +4,7 @@ from django.contrib.postgres.operations import CreateExtension
 class RDKitExtension(CreateExtension):
 
     def __init__(self):
-        self.name = 'rdkit'
+        super().__init__('rdkit')
 
     def database_forwards(self, app_label, schema_editor, from_state, to_state):
         super(RDKitExtension, self).database_forwards(app_label, 
