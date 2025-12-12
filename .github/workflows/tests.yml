@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
-        django-version: ["4.2", "5.1", "5.2"]
+        django-version: ["4.2", "5.1", "5.2", "6.0"]
         # using these specific versions since I have an image built for them
         # here: https://github.com/radusuciu/docker-postgres-rdkit
         # these should be expanded when I take a look at that repo to add more versions
