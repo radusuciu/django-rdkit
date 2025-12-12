@@ -15,7 +15,7 @@ jobs:
       fail-fast: false
       matrix:
         python-version: ["3.10", "3.11", "3.12", "3.13"]
-        django-version: ["4.2", "5.1", "5.2", "6.0"]
+        django-version: ["4.2", "5.2", "6.0"]
         psycopg-adapter: ["psycopg2", "psycopg3"]
         # using these specific versions since I have an image built for them
         # here: https://github.com/radusuciu/docker-postgres-rdkit
