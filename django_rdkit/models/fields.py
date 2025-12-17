@@ -52,6 +52,10 @@ class MolFieldPklMixin:
         # into the desired Python data type
         if value is None:
             return value
+        if isinstance(value, str):
+            # RETURNING: raw mol type's text representation is SMILES
+            return Chem.MolFromSmiles(value)
+        # SELECT: mol_to_pkl() returns binary pickle
         return Chem.Mol(bytes(value))
 
     def get_prep_value(self, value):
@@ -196,6 +200,9 @@ class BfpField(Field):
     def from_db_value(self, value, expression, connection):
         if value is None:
             return value
+        if isinstance(value, str):
+            # RETURNING: raw bfp type returns hex text (\x...)
+            value = bytes.fromhex(value[2:])
         return DataStructs.CreateFromBinaryText(bytes(value))
 
     def to_python(self, value):
