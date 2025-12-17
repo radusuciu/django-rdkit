@@ -52,6 +52,10 @@ class MolFieldPklMixin:
         # into the desired Python data type
         if value is None:
             return value
+        if isinstance(value, str):
+            # RETURNING: raw mol type's text representation is SMILES
+            return Chem.MolFromSmiles(value)
+        # SELECT: mol_to_pkl() returns binary pickle
         return Chem.Mol(bytes(value))
 
     def get_prep_value(self, value):
@@ -196,6 +200,9 @@ class BfpField(Field):
     def from_db_value(self, value, expression, connection):
         if value is None:
             return value
+        if isinstance(value, str):
+            # RETURNING: raw bfp type returns hex text (\x...)
+            value = bytes.fromhex(value[2:])
         return DataStructs.CreateFromBinaryText(bytes(value))
 
     def to_python(self, value):
@@ -270,7 +277,7 @@ class HasSubstruct(Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s @> %s' % (lhs, rhs), params
 
 
@@ -288,7 +295,7 @@ class HasSubstructFP(Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s ?> %s' % (lhs, rhs), params
 
 
@@ -303,7 +310,7 @@ class IsSubstruct(Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s <@ %s' % (lhs, rhs), params
 
 class IsMolSubstruct(MolLookupMixin, IsSubstruct):
@@ -320,7 +327,7 @@ class IsSubstructFP(Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s ?< %s' % (lhs, rhs), params
 
 RxnField.register_lookup(IsSubstructFP)
@@ -334,7 +341,7 @@ class SameStructure(MolLookupMixin, Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s @= %s' % (lhs, rhs), params
         #return '%s <@ %s AND %s @> %s' % (lhs, rhs, lhs, rhs), params + params
 
@@ -463,7 +470,7 @@ class TanimotoSimilar(Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s %%%% %s' % (lhs, rhs), params
 
 
@@ -478,7 +485,7 @@ class DiceSimilar(Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s # %s' % (lhs, rhs), params
 
 
@@ -493,7 +500,7 @@ class NotEqual(Lookup):
     def as_sql(self, qn, connection):
         lhs, lhs_params = self.process_lhs(qn, connection)
         rhs, rhs_params = self.process_rhs(qn, connection)
-        params = lhs_params + rhs_params
+        params = (*lhs_params, *rhs_params)
         return '%s <> %s' % (lhs, rhs), params
 
 

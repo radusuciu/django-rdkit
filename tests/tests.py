@@ -3,6 +3,7 @@ from django.test import TestCase
 from django_rdkit.models import *
 
 from rdkit.Chem import AllChem as Chem
+from rdkit.Chem import rdFingerprintGenerator
 
 from .models import *
 from .molecules import SMILES_SAMPLE
@@ -358,10 +359,11 @@ class BfpFieldTest2(TestCase):
 class BfpFieldTest3(TestCase):
 
     def test_pkl_io(self):
+        fpgen = rdFingerprintGenerator.GetMorganGenerator(radius=2, fpSize=512)
         bfps = {}
         for smiles in SMILES_SAMPLE:
             mol = Chem.MolFromSmiles(smiles)
-            bfp = Chem.GetMorganFingerprintAsBitVect(mol, 2, 512)
+            bfp = fpgen.GetFingerprint(mol)
             obj = BfpModel.objects.create(bfp=bfp)
             bfps[obj.pk] = bfp
 
